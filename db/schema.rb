@@ -13,14 +13,20 @@
 ActiveRecord::Schema[7.0].define(version: 2022_03_23_143624) do
   create_table "guests", force: :cascade do |t|
     t.string "email", null: false
+    t.string "first_name", null: false
+    t.string "last_name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_guests_on_email"
   end
 
   create_table "reservations", force: :cascade do |t|
     t.string "code", null: false
+    t.string "status", null: false
+    t.integer "number_of_guest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_reservations_on_code"
   end
 
 end

@@ -1,6 +1,4 @@
 class Guest < ApplicationRecord
 
-  field :email, type: String
-
-  validates :email, presence: true
+  validates :email, presence: true, uniqueness: true
 end
