@@ -71,7 +71,8 @@ RSpec.describe "Reservations Management", type: :request do
         context 'reservation' do
           it 'create reservation' do
             post path, params: body_params.to_json, headers: headers
-            reservation = Reservation.find_by(code: code)
+            expect(response.code).to eq('200')
+            reservation = Reservation.find_by(code: reservation_code)
             expect(reservation).to be_present
             expect(reservation.code).to eq(reservation_code)
             expect(reservation.status).to eq(reservation_status)
@@ -84,38 +85,38 @@ RSpec.describe "Reservations Management", type: :request do
           end
 
           it 'update reservation' do
-            reservation = create :reservation, code: reservation_code, status: reservation_status
-            reservation_status = 'failed'
+            reservation = create :reservation, code: reservation_code, status: 'failed'
             post path, params: body_params.to_json, headers: headers
+            expect(response.code).to eq('200')
             reservation.reload
             expect(reservation.code).to eq(reservation_code)
-            expect(reservation.status).to eq('failed')
+            expect(reservation.status).to eq(reservation_status)
           end
         end
 
         context  'guest' do
           it 'create guest' do
             post path, params: body_params.to_json, headers: headers
-            guest = Guest.find_by(email: code)
+            expect(response.code).to eq('200')
+            guest = Guest.find_by(email: guest_email)
             expect(guest).to be_present
-            expect(guest.code).to eq(reservation_code)
+            expect(guest.email).to eq(guest_email)
           end
 
           it 'email must uniq' do
             post path, params: body_params.to_json, headers: headers
             post path, params: body_params.to_json, headers: headers
-            expect(guest.all.count).to eq(1)
+            expect(Guest.all.count).to eq(1)
           end
 
           it 'update guest' do
-            guest = create :guest, email: guest_email, first_name: guest_first_name, last_name: guest_last_name
-            guest_first_name = 'Woody'
-            guest_last_name = 'Woodpecker'
+            guest = create :guest, email: guest_email, first_name: 'Woody', last_name: 'Woodpecker'
             post path, params: body_params.to_json, headers: headers
+            expect(response.code).to eq('200')
             guest.reload
             expect(guest.email).to eq(guest_email)
-            expect(guest.first_name).to eq('Woody')
-            expect(guest.last_name).to eq('Woodpecker')
+            expect(guest.first_name).to eq(guest_first_name)
+            expect(guest.last_name).to eq(guest_last_name)
           end
         end
       end
