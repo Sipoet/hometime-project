@@ -1,3 +1,3 @@
 class JsonResponse < Response
-  attr_accessor :data
+  attr_accessor :body
 end

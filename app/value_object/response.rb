@@ -1,24 +1,13 @@
 class Response
-  attr_reader :status, :errors
+  extend SimpleEnum::Attribute
+
+  attr_reader :errors
+  attr_accessor :status_cd
+
+  as_enum :status, [:success, :failed, :not_found, :forbidden], map: :string
 
   def initialize
     @errors = []
-  end
-
-  def success!
-    @status = :success
-  end
-
-  def failed!
-    @status = :failed
-  end
-
-  def success?
-    @status == :success
-  end
-
-  def failed?
-    @status == :failed
   end
 
   def add_error(error)

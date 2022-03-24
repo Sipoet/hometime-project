@@ -6,7 +6,9 @@ class BaseAdapter
 
   def self.set_attribute(name, &block)
     temp_container = self.class_variable_defined?(:@@attributes) ? self.attributes : []
-    temp_container << Attribute.new(name: name, converter: block)
+    atribute = Attribute.new(name)
+    block.call(atribute)
+    temp_container << atribute
     self.class_variable_set(:@@attributes, temp_container)
   end
 
@@ -16,17 +18,31 @@ class BaseAdapter
 
   def convert
     self.class.attributes.each_with_object({}) do|atribute, obj|
-      obj[atribute.name] = atribute.converter.call(@params)
+      obj[atribute.name] = get_value(atribute)
       Rails.logger.debug"Atribute #{atribute.name} value: #{obj[atribute.name]}"
     end
   end
 
-  class Attribute
-    attr_accessor :name, :converter
+  private
 
-    def initialize(name:, converter:)
+  def get_value(atribute)
+    atribute.converters.each do |converter|
+      value = converter.call(@params) rescue nil
+      return value if value.present?
+    end
+  end
+
+  class Attribute
+    attr_accessor :name
+    attr_reader :converters
+
+    def initialize(name)
       @name = name
-      @converter = converter
+      @converters = []
+    end
+
+    def add_converter(&block)
+      @converters << block
     end
   end
 end
