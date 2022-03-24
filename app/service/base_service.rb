@@ -11,7 +11,7 @@ class BaseService
     call(params)
   rescue => e
     Rails.logger.error("error: #{e.message} backtrace: #{e.backtrace[0..5].inspect}")
-    add_error(title: 'server error', message: e.message)
+    add_error(title: 'server error', message: e.message, source: e.backtrace[0])
   end
 
   def self.run(params, response: nil)
@@ -28,9 +28,9 @@ class BaseService
     raise 'implement call must on parent class'
   end
 
-  def add_error(title: 'failed to save', message:)
+  def add_error(title: 'failed to save', message:, source: nil)
     @result.failed!
-    @result.add_error(status: 400, title: title, detail: message)
+    @result.add_error(status: 400, title: title, detail: message, source: source)
   end
 
   class ValidationError < StandardError;end
