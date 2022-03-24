@@ -72,8 +72,13 @@ RSpec.describe "Reservations Management", type: :request do
           it 'create reservation' do
             post path, params: body_params.to_json, headers: headers
             expect(response.code).to eq('200')
+            json_body = JSON.parse(response.body)
+            expect(json_body).to be_present
+            data = json_body['data']
+            expect(data).to be_present
             reservation = Reservation.find_by(code: reservation_code)
             expect(reservation).to be_present
+            expect(data['id']).to eq(reservation.id)
             expect(reservation.code).to eq(reservation_code)
             expect(reservation.status).to eq(reservation_status)
           end
